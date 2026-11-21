@@ -42,9 +42,9 @@ Models are downloaded/stored in the current working directory's `models` folder 
 The checkout is retained in `build/upstream`. Update it and rebuild with:
 
 ```sh
- git -C build/upstream pull --recurse-submodules
- git -C build/upstream submodule update --init --recursive
- ./scripts/build-macos.sh
+git -C build/upstream pull --recurse-submodules
+git -C build/upstream submodule update --init --recursive
+./scripts/build-macos.sh
 ```
 
 The local patcher is idempotent. It only changes the upstream top-level `CMakeLists.txt` in the generated checkout; it does not change this overlay repository's files.
@@ -60,6 +60,7 @@ This is a build/configuration port, not a claim that every workload will run ent
 ## Troubleshooting
 
 - If CMake cannot find Metal tools, install/update Xcode Command Line Tools and accept the Xcode license.
+- If CMake reports `Could NOT find ZLIB (missing: ZLIB_LIBRARY)`, the upstream build is forcing static zlib. The macOS patcher now leaves zlib dynamic so CMake can use the system library. Remove the stale configure cache and retry: `rm -rf build/upstream/build/macos` followed by `./scripts/build-macos.sh`.
 - If upstream's CMake configuration changes, the patch script intentionally stops rather than silently making a potentially incorrect edit.
 - For a clean rebuild, remove `build/upstream` and run `./scripts/build-macos.sh` again.
 
